@@ -26,13 +26,13 @@ if (!$pemain) {
 }
 
 if (isset($_POST['submit'])) {
-    $nama_pemain = trim($_POST['nama_pemain']);
+    $nama_pemain   = trim($_POST['nama_pemain']);
     $tanggal_lahir = trim($_POST['tanggal_lahir']);
-    $umur = trim($_POST['umur']);
+    $umur          = trim($_POST['umur']);
     $jenis_kelamin = trim($_POST['jenis_kelamin']);
-    $alamat = trim($_POST['alamat']);
-    $no_hp = trim($_POST['no_hp']);
-    $posisi = trim($_POST['posisi']);
+    $alamat        = trim($_POST['alamat']);
+    $no_hp         = trim($_POST['no_hp']);
+    $posisi        = trim($_POST['posisi']);
 
     if (
         empty($nama_pemain) || empty($tanggal_lahir) || empty($umur) ||
@@ -80,32 +80,29 @@ if (isset($_POST['submit'])) {
 
     <div class="absolute inset-0 bg-gradient-to-b from-[#7a1024]/70 via-[#c9151b]/30 to-[#5a0b19]/90"></div>
 
-     <div class="relative z-10 min-h-screen">
-    <header class="bg-gradient-to-r from-[#7a1024] via-[#c9151b] to-[#7a1024] shadow-2xl">
-        <div class="max-w-6xl mx-auto px-6 py-5 flex justify-between items-start">
-            
-            <!-- KIRI (LOGO + TEXT) -->
-            <div class="flex items-center gap-4">
+    <div class="relative z-10 min-h-screen">
+        <header class="bg-gradient-to-r from-[#7a1024] via-[#c9151b] to-[#7a1024] shadow-2xl">
+            <div class="max-w-6xl mx-auto px-6 py-5 flex justify-between items-start">
+                
+                <div class="flex items-center gap-4">
+                    <img src="../img/logo.jpeg" alt="Logo"
+                         class="w-14 h-auto object-contain drop-shadow-[0_0_8px_rgba(201,21,27,0.7)]">
 
-                <!-- LOGO -->
-                <img src="../img/logo.jpeg" alt="Logo"
-                     class="w-14 h-auto object-contain drop-shadow-[0_0_8px_rgba(201,21,27,0.7)]">
-
-                <!-- TEXT -->
-                <div>
-                    <p class="text-red-100 text-xs uppercase tracking-[0.3em] font-semibold">
-                        Sekolah Sepak Bola
-                    </p>
-
-                    <h1 class="text-white text-3xl md:text-4xl font-extrabold tracking-wide leading-tight">
-                        SSB HBS
-                    </h1>
-
-                    <div class="flex items-center gap-2 mt-3">
-                        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                        <p class="text-white/90 text-sm md:text-base">
-                            Edit Profil Pemain
+                    <div>
+                        <p class="text-red-100 text-xs uppercase tracking-[0.3em] font-semibold">
+                            Sekolah Sepak Bola
                         </p>
+
+                        <h1 class="text-white text-3xl md:text-4xl font-extrabold tracking-wide leading-tight">
+                            SSB HBS
+                        </h1>
+
+                        <div class="flex items-center gap-2 mt-3">
+                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <p class="text-white/90 text-sm md:text-base">
+                                Edit Profil Pemain
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -126,38 +123,34 @@ if (isset($_POST['submit'])) {
                         </div>
                     <?php } ?>
 
-                    <form method="POST">
+                    <form method="POST" id="formEditProfil">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                             <div>
                                 <label class="block mb-2 font-semibold text-gray-700">Nama Pemain</label>
-                                <input type="text" name="nama_pemain"
+                                <input type="text" name="nama_pemain" id="nama_pemain"
                                        value="<?php echo htmlspecialchars($pemain['nama_pemain']); ?>"
-                                       class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]"
-                                       required>
+                                       class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]">
                             </div>
 
                             <div>
                                 <label class="block mb-2 font-semibold text-gray-700">Tanggal Lahir</label>
-                                <input type="date" name="tanggal_lahir"
+                                <input type="date" name="tanggal_lahir" id="tanggal_lahir"
                                        value="<?php echo htmlspecialchars($pemain['tanggal_lahir']); ?>"
-                                       class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]"
-                                       required>
+                                       class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]">
                             </div>
 
                             <div>
                                 <label class="block mb-2 font-semibold text-gray-700">Umur</label>
-                                <input type="number" name="umur"
+                                <input type="number" name="umur" id="umur"
                                        value="<?php echo htmlspecialchars($pemain['umur']); ?>"
-                                       class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]"
-                                       required>
+                                       class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]">
                             </div>
 
                             <div>
                                 <label class="block mb-2 font-semibold text-gray-700">Jenis Kelamin</label>
-                                <select name="jenis_kelamin"
-                                        class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]"
-                                        required>
+                                <select name="jenis_kelamin" id="jenis_kelamin"
+                                        class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]">
                                     <option value="">-- Pilih Jenis Kelamin --</option>
                                     <option value="Laki-laki" <?php if ($pemain['jenis_kelamin'] == 'Laki-laki') echo 'selected'; ?>>Laki-laki</option>
                                     <option value="Perempuan" <?php if ($pemain['jenis_kelamin'] == 'Perempuan') echo 'selected'; ?>>Perempuan</option>
@@ -166,24 +159,22 @@ if (isset($_POST['submit'])) {
 
                             <div class="md:col-span-2">
                                 <label class="block mb-2 font-semibold text-gray-700">Alamat</label>
-                                <textarea name="alamat" rows="4"
-                                          class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]"
-                                          required><?php echo htmlspecialchars($pemain['alamat']); ?></textarea>
+                                <textarea name="alamat" id="alamat" rows="4"
+                                          class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]"><?php echo htmlspecialchars($pemain['alamat']); ?></textarea>
                             </div>
 
                             <div>
                                 <label class="block mb-2 font-semibold text-gray-700">No HP</label>
-                                <input type="text" name="no_hp"
+                                <input type="text" name="no_hp" id="no_hp"
                                        value="<?php echo htmlspecialchars($pemain['no_hp']); ?>"
-                                       class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]"
-                                       required>
+                                       class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]">
                             </div>
 
                             <div>
                                 <label class="block mb-2 font-semibold text-gray-700">Posisi</label>
-                                <select name="posisi"
-                                        class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]"
-                                        required>
+                                <select name="posisi" id="posisi"
+                                        class="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#c9151b]">
+                                    <option value="">-- Pilih Posisi --</option>
                                     <option value="Penjaga Gawang (Goalkeeper)" <?php if ($pemain['posisi'] == 'Penjaga Gawang (Goalkeeper)') echo 'selected'; ?>>Penjaga Gawang (Goalkeeper)</option>
                                     <option value="Bek (Defender)" <?php if ($pemain['posisi'] == 'Bek (Defender)') echo 'selected'; ?>>Bek (Defender)</option>
                                     <option value="Gelandang (Midfielder)" <?php if ($pemain['posisi'] == 'Gelandang (Midfielder)') echo 'selected'; ?>>Gelandang (Midfielder)</option>
@@ -210,5 +201,45 @@ if (isset($_POST['submit'])) {
             </div>
         </main>
     </div>
+
+    <script>
+        const form = document.getElementById('formEditProfil');
+
+        form.addEventListener('submit', function(e) {
+            const namaPemain = document.getElementById('nama_pemain').value.trim();
+            const tanggalLahir = document.getElementById('tanggal_lahir').value.trim();
+            const umur = document.getElementById('umur').value.trim();
+            const jenisKelamin = document.getElementById('jenis_kelamin').value.trim();
+            const alamat = document.getElementById('alamat').value.trim();
+            const noHp = document.getElementById('no_hp').value.trim();
+            const posisi = document.getElementById('posisi').value.trim();
+
+            if (
+                namaPemain === '' ||
+                tanggalLahir === '' ||
+                umur === '' ||
+                jenisKelamin === '' ||
+                alamat === '' ||
+                noHp === '' ||
+                posisi === ''
+            ) {
+                alert('Data tidak boleh kosong!');
+                e.preventDefault();
+                return;
+            }
+
+            if (isNaN(umur)) {
+                alert('Umur harus berupa angka!');
+                e.preventDefault();
+                return;
+            }
+
+            if (isNaN(noHp)) {
+                alert('No HP harus berupa angka!');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
 </body>
 </html>
