@@ -11,7 +11,7 @@ if (isset($_SESSION['id_user'])) {
     exit;
 }
 
-// 🔥 AMBIL COOKIE REMEMBER ME
+// ambil cookie remember me
 $remembered_username = "";
 if (isset($_COOKIE['username'])) {
     $remembered_username = $_COOKIE['username'];
@@ -44,7 +44,7 @@ Silakan login menggunakan akun resmi yang diberikan oleh pihak Sekolah Sepak Bol
 </p>
 
 <!-- FORM LOGIN -->
-<form action="proses_login.php" method="POST">
+<form action="proses_login.php" method="POST" onsubmit="return validateForm()">
 
 <!-- USERNAME -->
 <div class="mb-8 relative text-left">
@@ -53,9 +53,9 @@ Silakan login menggunakan akun resmi yang diberikan oleh pihak Sekolah Sepak Bol
 <input
 type="text"
 name="username"
+id="username"
 value="<?php echo $remembered_username; ?>"
 autocomplete="off"
-required
 placeholder="Masukkan Username"
 class="w-full bg-transparent border-b border-gray-300 py-3 outline-none text-white placeholder-gray-300 text-xl pr-10">
 </div>
@@ -68,7 +68,6 @@ class="w-full bg-transparent border-b border-gray-300 py-3 outline-none text-whi
 id="password"
 type="password"
 name="password"
-required
 placeholder="Masukkan Password"
 class="w-full bg-transparent border-b border-gray-300 py-3 outline-none text-white placeholder-gray-300 text-xl pr-10">
 
@@ -126,18 +125,43 @@ Login
 
 </div>
 
+<!-- ================= JS ================= -->
 <script>
+// toggle password
 function togglePassword(){
-const password = document.getElementById("password");
-const slash = document.getElementById("eyeSlash");
+    const password = document.getElementById("password");
+    const slash = document.getElementById("eyeSlash");
 
-if(password.type === "password"){
-password.type = "text";
-slash.classList.remove("hidden");
-}else{
-password.type = "password";
-slash.classList.add("hidden");
+    if(password.type === "password"){
+        password.type = "text";
+        slash.classList.remove("hidden");
+    } else {
+        password.type = "password";
+        slash.classList.add("hidden");
+    }
 }
+
+// VALIDASI FORM LOGIN
+function validateForm() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (username === "") {
+        alert("Username tidak boleh kosong!");
+        return false;
+    }
+
+    if (password === "") {
+        alert("Password tidak boleh kosong!");
+        return false;
+    }
+
+    if (password.length < 5) {
+        alert("Password minimal 5 karakter!");
+        return false;
+    }
+
+    return true;
 }
 </script>
 
