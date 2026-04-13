@@ -2,6 +2,23 @@
 session_start();
 include '../config/koneksi.php';
 
+// anti cache
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+// cek login
+if (!isset($_SESSION['id_user'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+// cek role admin
+if ($_SESSION['role'] != 'admin') {
+    header("Location: ../login.php");
+    exit;
+}
+
 $data_user = mysqli_query($conn, "SELECT * FROM users WHERE role='user'");
 
 if (!isset($_GET['id'])) {
@@ -19,20 +36,53 @@ if (!$data) {
 }
 
 if (isset($_POST['update'])) {
-    $id_user        = $_POST['id_user'];
-    $nama_pemain    = $_POST['nama_pemain'];
-    $tanggal_lahir  = $_POST['tanggal_lahir'];
-    $umur           = $_POST['umur'];
-    $jenis_kelamin  = $_POST['jenis_kelamin'];
-    $alamat         = $_POST['alamat'];
-    $no_hp          = $_POST['no_hp'];
-    $posisi         = $_POST['posisi'];
+    $id_user        = trim($_POST['id_user']);
+    $nama_pemain    = trim($_POST['nama_pemain']);
+    $tanggal_lahir  = trim($_POST['tanggal_lahir']);
+    $umur           = trim($_POST['umur']);
+    $jenis_kelamin  = trim($_POST['jenis_kelamin']);
+    $alamat         = trim($_POST['alamat']);
+    $no_hp          = trim($_POST['no_hp']);
+    $posisi         = trim($_POST['posisi']);
 
     $foto_lama = $data['foto'];
     $foto = $_FILES['foto']['name'];
     $tmp  = $_FILES['foto']['tmp_name'];
 
+    // VALIDASI BACKEND
+    if (
+        empty($id_user) || empty($nama_pemain) || empty($tanggal_lahir) ||
+        empty($umur) || empty($jenis_kelamin) || empty($alamat) ||
+        empty($no_hp) || empty($posisi)
+    ) {
+        echo "<script>alert('Semua data wajib diisi'); window.history.back();</script>";
+        exit;
+    }
+
+    if (!preg_match("/^[a-zA-Z\s]+$/", $nama_pemain)) {
+        echo "<script>alert('Nama pemain hanya boleh huruf'); window.history.back();</script>";
+        exit;
+    }
+
+    if (!preg_match("/^[0-9]+$/", $umur)) {
+        echo "<script>alert('Umur harus berupa angka'); window.history.back();</script>";
+        exit;
+    }
+
+    if (!preg_match("/^[0-9]+$/", $no_hp)) {
+        echo "<script>alert('Nomor HP hanya boleh angka'); window.history.back();</script>";
+        exit;
+    }
+
     if (!empty($foto)) {
+        $allowed = ['jpg', 'jpeg', 'png'];
+        $ext = strtolower(pathinfo($foto, PATHINFO_EXTENSION));
+
+        if (!in_array($ext, $allowed)) {
+            echo "<script>alert('Foto harus berformat JPG, JPEG, atau PNG'); window.history.back();</script>";
+            exit;
+        }
+
         move_uploaded_file($tmp, "../img/" . $foto);
     } else {
         $foto = $foto_lama;
@@ -54,7 +104,7 @@ if (isset($_POST['update'])) {
     if ($update) {
         echo "<script>alert('Data pemain berhasil diupdate'); window.location='data_pemain.php';</script>";
     } else {
-        echo "<script>alert('Gagal mengupdate data pemain');</script>";
+        echo "<script>alert('Gagal mengupdate data pemain'); window.history.back();</script>";
     }
 }
 ?>
@@ -71,6 +121,7 @@ if (isset($_POST['update'])) {
 
 <div class="flex h-screen overflow-hidden">
 
+    <!-- Sidebar kanan -->
     <div id="sidebar" class="fixed inset-y-0 right-0 z-50 w-80 bg-[#fdf6f6] text-black transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-hidden">
 
         <div class="bg-gradient-to-r from-[#7a1024] to-[#E50914] text-white px-6 py-5 flex justify-between items-center">
@@ -100,6 +151,7 @@ if (isset($_POST['update'])) {
 
     <div class="flex-1 overflow-y-auto">
 
+        <!-- Header -->
         <header class="flex items-center justify-between bg-[#8B0000] px-6 py-4 text-white shadow">
             <div class="flex items-center gap-3">
                 <img src="../img/logo.png" alt="Logo HBS" class="h-12 w-12 object-contain">
@@ -123,6 +175,7 @@ if (isset($_POST['update'])) {
             </div>
         </header>
 
+        <!-- Main -->
         <main class="p-6 bg-gray-100 min-h-[calc(100vh-80px)]">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Edit Pemain</h2>
@@ -130,11 +183,11 @@ if (isset($_POST['update'])) {
             </div>
 
             <div class="bg-white shadow-xl p-6">
-                <form method="POST" enctype="multipart/form-data" class="grid gap-5 md:grid-cols-2">
+                <form method="POST" enctype="multipart/form-data" onsubmit="return validasiEditPemain()" class="grid gap-5 md:grid-cols-2">
 
                     <div class="md:col-span-2">
                         <label class="mb-2 block font-medium text-gray-700">Pilih User</label>
-                        <select name="id_user" required class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
+                        <select id="id_user" name="id_user" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
                             <option value="">-- Pilih User --</option>
                             <?php while ($u = mysqli_fetch_assoc($data_user)) : ?>
                                 <option value="<?= $u['id_user']; ?>" <?= ($u['id_user'] == $data['id_user']) ? 'selected' : ''; ?>>
@@ -146,22 +199,22 @@ if (isset($_POST['update'])) {
 
                     <div>
                         <label class="mb-2 block font-medium text-gray-700">Nama Pemain</label>
-                        <input type="text" name="nama_pemain" value="<?= $data['nama_pemain']; ?>" required class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
+                        <input type="text" id="nama_pemain" name="nama_pemain" value="<?= $data['nama_pemain']; ?>" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
                     </div>
 
                     <div>
                         <label class="mb-2 block font-medium text-gray-700">Tanggal Lahir</label>
-                        <input type="date" name="tanggal_lahir" value="<?= $data['tanggal_lahir']; ?>" required class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
+                        <input type="date" id="tanggal_lahir" name="tanggal_lahir" value="<?= $data['tanggal_lahir']; ?>" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
                     </div>
 
                     <div>
                         <label class="mb-2 block font-medium text-gray-700">Umur</label>
-                        <input type="number" name="umur" value="<?= $data['umur']; ?>" required class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
+                        <input type="text" id="umur" name="umur" value="<?= $data['umur']; ?>" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
                     </div>
 
                     <div>
                         <label class="mb-2 block font-medium text-gray-700">Jenis Kelamin</label>
-                        <select name="jenis_kelamin" required class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
+                        <select id="jenis_kelamin" name="jenis_kelamin" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
                             <option value="Laki-laki" <?= ($data['jenis_kelamin'] == 'Laki-laki') ? 'selected' : ''; ?>>Laki-laki</option>
                             <option value="Perempuan" <?= ($data['jenis_kelamin'] == 'Perempuan') ? 'selected' : ''; ?>>Perempuan</option>
                         </select>
@@ -169,17 +222,18 @@ if (isset($_POST['update'])) {
 
                     <div class="md:col-span-2">
                         <label class="mb-2 block font-medium text-gray-700">Alamat</label>
-                        <textarea name="alamat" rows="4" required class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600"><?= $data['alamat']; ?></textarea>
+                        <textarea id="alamat" name="alamat" rows="4" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600"><?= $data['alamat']; ?></textarea>
                     </div>
 
                     <div>
                         <label class="mb-2 block font-medium text-gray-700">No HP</label>
-                        <input type="text" name="no_hp" value="<?= $data['no_hp']; ?>" required class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
+                        <input type="text" id="no_hp" name="no_hp" value="<?= $data['no_hp']; ?>" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
                     </div>
 
                     <div>
                         <label class="mb-2 block font-medium text-gray-700">Posisi</label>
-                        <select name="posisi" required class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
+                        <select id="posisi" name="posisi" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600">
+                            <option value="">-- Pilih Posisi --</option>
                             <option value="Penjaga Gawang (Goalkeeper)" <?= ($data['posisi'] == 'Penjaga Gawang (Goalkeeper)') ? 'selected' : ''; ?>>Penjaga Gawang (Goalkeeper)</option>
                             <option value="Bek (Defender)" <?= ($data['posisi'] == 'Bek (Defender)') ? 'selected' : ''; ?>>Bek (Defender)</option>
                             <option value="Gelandang (Midfielder)" <?= ($data['posisi'] == 'Gelandang (Midfielder)') ? 'selected' : ''; ?>>Gelandang (Midfielder)</option>
@@ -190,7 +244,7 @@ if (isset($_POST['update'])) {
 
                     <div class="md:col-span-2">
                         <label class="mb-2 block font-medium text-gray-700">Foto Pemain</label>
-                        <input type="file" name="foto" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600 bg-white">
+                        <input type="file" id="foto" name="foto" class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-red-600 bg-white">
 
                         <?php if (!empty($data['foto'])) : ?>
                             <div class="mt-3">
@@ -223,6 +277,77 @@ function toggleSidebar() {
 
     sidebar.classList.toggle('translate-x-full');
     overlay.classList.toggle('hidden');
+}
+
+function validasiEditPemain() {
+    let id_user = document.getElementById("id_user").value.trim();
+    let nama = document.getElementById("nama_pemain").value.trim();
+    let tanggal = document.getElementById("tanggal_lahir").value.trim();
+    let umur = document.getElementById("umur").value.trim();
+    let jk = document.getElementById("jenis_kelamin").value.trim();
+    let alamat = document.getElementById("alamat").value.trim();
+    let nohp = document.getElementById("no_hp").value.trim();
+    let posisi = document.getElementById("posisi").value.trim();
+
+    let huruf = /^[A-Za-z\s]+$/;
+    let angka = /^[0-9]+$/;
+
+    if (id_user === "") {
+        alert("User wajib dipilih");
+        return false;
+    }
+
+    if (nama === "") {
+        alert("Nama pemain wajib diisi");
+        return false;
+    }
+
+    if (!huruf.test(nama)) {
+        alert("Nama pemain hanya boleh huruf");
+        return false;
+    }
+
+    if (tanggal === "") {
+        alert("Tanggal lahir wajib diisi");
+        return false;
+    }
+
+    if (umur === "") {
+        alert("Umur wajib diisi");
+        return false;
+    }
+
+    if (!angka.test(umur)) {
+        alert("Umur harus berupa angka");
+        return false;
+    }
+
+    if (jk === "") {
+        alert("Jenis kelamin wajib dipilih");
+        return false;
+    }
+
+    if (alamat === "") {
+        alert("Alamat wajib diisi");
+        return false;
+    }
+
+    if (nohp === "") {
+        alert("Nomor HP wajib diisi");
+        return false;
+    }
+
+    if (!angka.test(nohp)) {
+        alert("Nomor HP hanya boleh angka");
+        return false;
+    }
+
+    if (posisi === "") {
+        alert("Posisi wajib dipilih");
+        return false;
+    }
+
+    return true;
 }
 </script>
 

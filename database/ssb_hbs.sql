@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 11 Apr 2026 pada 20.33
--- Versi server: 10.4.32-MariaDB
--- Versi PHP: 8.2.12
+-- Generation Time: Apr 13, 2026 at 02:51 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pemain`
+-- Table structure for table `pemain`
 --
 
 CREATE TABLE `pemain` (
@@ -40,17 +40,10 @@ CREATE TABLE `pemain` (
   `foto` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data untuk tabel `pemain`
---
-
-INSERT INTO `pemain` (`id_pemain`, `id_user`, `nama_pemain`, `tanggal_lahir`, `umur`, `jenis_kelamin`, `alamat`, `no_hp`, `posisi`, `foto`) VALUES
-(1, 2, 'Maulana', '2005-01-10', 21, 'Laki-laki', 'Buduran, Sidoarjo', '08123456789', 'Penjaga Gawang (Goalkeeper)', 'maulana.jpeg');
-
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -61,52 +54,53 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id_user`, `username`, `password`, `role`) VALUES
 (1, 'admin', 'admin123', 'admin'),
-(2, 'Maulana', '12345', 'user');
+(2, 'maulana', '12345', 'user'),
+(3, 'Budi', 'budi321', 'user');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indeks untuk tabel `pemain`
+-- Indexes for table `pemain`
 --
 ALTER TABLE `pemain`
   ADD PRIMARY KEY (`id_pemain`),
   ADD KEY `id_user` (`id_user`);
 
 --
--- Indeks untuk tabel `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id_user`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `pemain`
+-- AUTO_INCREMENT for table `pemain`
 --
 ALTER TABLE `pemain`
-  MODIFY `id_pemain` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_pemain` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT untuk tabel `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `pemain`
+-- Constraints for table `pemain`
 --
 ALTER TABLE `pemain`
   ADD CONSTRAINT `pemain_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`);

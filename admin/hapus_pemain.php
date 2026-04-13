@@ -1,5 +1,23 @@
 <?php
+session_start();
 include '../config/koneksi.php';
+
+// anti cache
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+// cek login
+if (!isset($_SESSION['id_user'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+// cek role admin
+if ($_SESSION['role'] != 'admin') {
+    header("Location: ../login.php");
+    exit;
+}
 
 if (!isset($_GET['id'])) {
     echo "<script>alert('ID tidak ditemukan'); window.location='data_pemain.php';</script>";
