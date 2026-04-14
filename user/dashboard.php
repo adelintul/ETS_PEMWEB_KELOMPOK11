@@ -1,18 +1,36 @@
 <?php
-session_start();
+$timeout = 1800; // 30 menit detik
+session_start(); //mulai sessioj
 
-include '../config/koneksi.php';
+include '../config/koneksi.php'; //koneksi ke database
 
 if (!isset($_SESSION['id_user'])) {
     header("Location: ../login.php");
     exit;
+} //session cek apakah sudah login
+
+if ($_SESSION['role'] != 'user') {
+    header("Location: ../login.php");
+    exit;
+} //session role
+
+if (isset($_SESSION['last_activity'])) {
+    if (time() - $_SESSION['last_activity'] > $timeout) {
+        session_unset();
+        session_destroy();
+        header("Location: ../login.php?pesan=session_habis");
+        exit;
+    }
 }
 
+$_SESSION['last_activity'] = time();
+
+
 $id_user = $_SESSION['id_user'];
-$username = $_SESSION['username'];
+$username = $_SESSION['username']; //mengambil data user yang sedang login
 
 $queryUser = mysqli_query($conn, "SELECT * FROM users WHERE id_user = '$id_user'");
-$user = mysqli_fetch_assoc($queryUser);
+$user = mysqli_fetch_assoc($queryUser); //mengambil data dari tabel users berdasarkan id user
 
 if (!$user) {
     echo "Data user tidak ditemukan.";
@@ -21,7 +39,7 @@ if (!$user) {
 
 $queryPemain = mysqli_query($conn, "SELECT * FROM pemain WHERE id_user = '$id_user'");
 $pemain = mysqli_fetch_assoc($queryPemain);
-?>
+?> 
 
 <!DOCTYPE html>
 <html lang="id">
@@ -29,7 +47,7 @@ $pemain = mysqli_fetch_assoc($queryPemain);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard User</title>
-    <link rel="stylesheet" href="../dist/output.css">
+    <link rel="stylesheet" href="../dist/output.css"> 
 </head>
 <body class="min-h-screen bg-cover bg-center bg-fixed relative" style="background-image: url('../img/bg-user-panel.jpg');">
 

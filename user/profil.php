@@ -1,16 +1,29 @@
 <?php
+$timeout = 1800; // 30 menit detik
 session_start();
 include '../config/koneksi.php';
 
 if (!isset($_SESSION['id_user'])) {
     header("Location: ../login.php");
     exit;
-}
+} //cek apakah user sudah login
 
 if ($_SESSION['role'] != 'user') {
     header("Location: ../login.php");
     exit;
+} //cek apakh user sesuai dengan role 
+
+if (isset($_SESSION['last_activity'])) {
+    if (time() - $_SESSION['last_activity'] > $timeout) {
+        session_unset();
+        session_destroy();
+        header("Location: ../login.php?pesan=session_habis");
+        exit;
+    }
 }
+
+$_SESSION['last_activity'] = time();
+
 
 $id_user = $_SESSION['id_user'];
 
@@ -78,7 +91,7 @@ $pemain = mysqli_fetch_assoc($queryPemain);
         </header>
 
         <main class="max-w-6xl mx-auto px-6 py-10">
-            <?php if ($pemain) { ?>
+            <?php if ($pemain) { ?> 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                     <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 overflow-hidden">
@@ -93,7 +106,7 @@ $pemain = mysqli_fetch_assoc($queryPemain);
                                 <?php } else { ?>
                                     <div class="w-44 h-44 rounded-3xl bg-gray-200 flex items-center justify-center text-gray-500 font-medium text-center px-4">
                                         Belum ada foto
-                                    </div>
+                                    </div> //menampilkan foto sesuai database
                                 <?php } ?>
                             </div>
 
@@ -169,7 +182,7 @@ $pemain = mysqli_fetch_assoc($queryPemain);
             <?php } else { ?>
                 <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 p-8">
                     <div class="bg-yellow-100 text-yellow-800 rounded-2xl px-5 py-4">
-                        Data profil pemain belum tersedia.
+                        Data profil pemain belum tersedia. //jika data tidal tersedia
                     </div>
                 </div>
             <?php } ?>
@@ -209,7 +222,7 @@ $pemain = mysqli_fetch_assoc($queryPemain);
         </div>
     </aside>
 
-    <script>
+    <script> //java script sidebar
         const openSidebar = document.getElementById('openSidebar');
         const closeSidebar = document.getElementById('closeSidebar');
         const sidebarMenu = document.getElementById('sidebarMenu');
@@ -230,6 +243,6 @@ $pemain = mysqli_fetch_assoc($queryPemain);
         openSidebar.addEventListener('click', showSidebar);
         closeSidebar.addEventListener('click', hideSidebar);
         sidebarOverlay.addEventListener('click', hideSidebar);
-    </script>
+    </script> 
 </body>
 </html>

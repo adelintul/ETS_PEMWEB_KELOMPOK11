@@ -1,4 +1,5 @@
 <?php
+$timeout = 1800; // 30 menit
 session_start();
 include '../config/koneksi.php';
 
@@ -11,6 +12,17 @@ if ($_SESSION['role'] != 'user') {
     header("Location: ../login.php");
     exit;
 }
+
+if (isset($_SESSION['last_activity'])) {
+    if (time() - $_SESSION['last_activity'] > $timeout) {
+        session_unset();
+        session_destroy();
+        header("Location: ../login.php?pesan=session_habis");
+        exit;
+    }
+}
+
+$_SESSION['last_activity'] = time();
 
 $id_user = $_SESSION['id_user'];
 
@@ -202,7 +214,7 @@ if (isset($_POST['submit'])) {
         </main>
     </div>
 
-    <script>
+    <script> //validasi
         const form = document.getElementById('formEditProfil');
 
         form.addEventListener('submit', function(e) {
